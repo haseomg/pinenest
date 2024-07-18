@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'signup_customer.dart';
 import 'signup_vendor.dart';
+import 'dashboard.dart'; // Dashboard 페이지 추가
 
 class SignupIntro extends StatefulWidget {
   @override
@@ -24,6 +25,17 @@ class _SignupIntroState extends State<SignupIntro> {
             Navigator.pop(context);
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.close, color: Colors.black),
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => Dashboard()),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView( // 스크롤 가능하도록 수정
         padding: const EdgeInsets.all(16.0),
