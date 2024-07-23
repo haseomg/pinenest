@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'estimate_request_day_and_quantity.dart';
+import 'step_progress_indicator.dart';
 
 class EstimateRequestBoxSize extends StatefulWidget {
   @override
@@ -10,6 +11,25 @@ class _EstimateRequestBoxSizeState extends State<EstimateRequestBoxSize> {
   final TextEditingController _lengthController = TextEditingController();
   final TextEditingController _widthController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
+
+  void _nextStep(BuildContext context) {
+    final length = _lengthController.text;
+    final width = _widthController.text;
+    final height = _heightController.text;
+
+    print('📦 Box Size - Length: $length, Width: $width, Height: $height');
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EstimateRequestDayAndQuantity(
+          length: length,
+          width: width,
+          height: height,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,18 +105,12 @@ class _EstimateRequestBoxSizeState extends State<EstimateRequestBoxSize> {
             SizedBox(height: 20),
             Spacer(),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => EstimateRequestDayAndQuantity()),
-                );
-              },
+              onPressed: () => _nextStep(context),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                 child: Text('다음', style: TextStyle(fontFamily: 'SCDream', fontSize: 16)),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -105,30 +119,6 @@ class _EstimateRequestBoxSizeState extends State<EstimateRequestBoxSize> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class StepProgressIndicator extends StatelessWidget {
-  final int currentStep;
-  final int totalSteps;
-
-  StepProgressIndicator({required this.currentStep, required this.totalSteps});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(totalSteps, (index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: Icon(
-            index < currentStep ? Icons.circle : Icons.circle_outlined,
-            color: index < currentStep ? Colors.black : Colors.grey,
-            size: 12.0,
-          ),
-        );
-      }),
     );
   }
 }

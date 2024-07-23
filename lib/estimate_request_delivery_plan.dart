@@ -1,7 +1,26 @@
 import 'package:flutter/material.dart';
 import 'estimate_request_final_step.dart';
+import 'step_progress_indicator.dart';
 
 class EstimateRequestDeliveryPlan extends StatefulWidget {
+  final String length;
+  final String width;
+  final String height;
+  final String year;
+  final String month;
+  final String day;
+  final String quantity;
+
+  EstimateRequestDeliveryPlan({
+    required this.length,
+    required this.width,
+    required this.height,
+    required this.year,
+    required this.month,
+    required this.day,
+    required this.quantity,
+  });
+
   @override
   _EstimateRequestDeliveryPlanState createState() => _EstimateRequestDeliveryPlanState();
 }
@@ -15,6 +34,40 @@ class _EstimateRequestDeliveryPlanState extends State<EstimateRequestDeliveryPla
   final TextEditingController _postalCodeController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _detailedAddressController = TextEditingController();
+
+  void _nextStep(BuildContext context) {
+    final name = _nameController.text;
+    final location = _locationController.text;
+    final phone = '${_phoneController1.text}-${_phoneController2.text}-${_phoneController3.text}';
+    final postalCode = _postalCodeController.text;
+    final address = _addressController.text;
+    final detailedAddress = _detailedAddressController.text;
+
+    print('📦 Box Size - Length: ${widget.length}, Width: ${widget.width}, Height: ${widget.height}');
+    print('📆 Request Date: ${widget.year}-${widget.month}-${widget.day}, 🔢 Quantity: ${widget.quantity}');
+    print('👍🏻 Delivery Info - Name: $name, Location: $location, Phone: $phone, Postal Code: $postalCode, Address: $address, Detailed Address: $detailedAddress');
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EstimateRequestFinalStep(
+          length: widget.length,
+          width: widget.width,
+          height: widget.height,
+          year: widget.year,
+          month: widget.month,
+          day: widget.day,
+          quantity: widget.quantity,
+          name: name,
+          location: location,
+          phone: phone,
+          postalCode: postalCode,
+          address: address,
+          detailedAddress: detailedAddress,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +88,7 @@ class _EstimateRequestDeliveryPlanState extends State<EstimateRequestDeliveryPla
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽 정렬
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -155,12 +208,7 @@ class _EstimateRequestDeliveryPlanState extends State<EstimateRequestDeliveryPla
             SizedBox(height: 20),
             Spacer(),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => EstimateRequestFinalStep()),
-                );
-              },
+              onPressed: () => _nextStep(context),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                 child: Text('다음', style: TextStyle(fontFamily: 'SCDream', fontSize: 16)),
@@ -170,36 +218,12 @@ class _EstimateRequestDeliveryPlanState extends State<EstimateRequestDeliveryPla
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                minimumSize: Size(double.infinity, 48), // 수정된 부분
+                minimumSize: Size(double.infinity, 48),
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class StepProgressIndicator extends StatelessWidget {
-  final int currentStep;
-  final int totalSteps;
-
-  StepProgressIndicator({required this.currentStep, required this.totalSteps});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(totalSteps, (index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: Icon(
-            index < currentStep ? Icons.circle : Icons.circle_outlined,
-            color: index < currentStep ? Colors.black : Colors.grey,
-            size: 12.0,
-          ),
-        );
-      }),
     );
   }
 }

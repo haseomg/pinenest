@@ -1,7 +1,38 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'step_progress_indicator.dart';
 
 class EstimateRequestFinalStep extends StatefulWidget {
+  final String length;
+  final String width;
+  final String height;
+  final String year;
+  final String month;
+  final String day;
+  final String quantity;
+  final String name;
+  final String location;
+  final String phone;
+  final String postalCode;
+  final String address;
+  final String detailedAddress;
+
+  EstimateRequestFinalStep({
+    required this.length,
+    required this.width,
+    required this.height,
+    required this.year,
+    required this.month,
+    required this.day,
+    required this.quantity,
+    required this.name,
+    required this.location,
+    required this.phone,
+    required this.postalCode,
+    required this.address,
+    required this.detailedAddress,
+  });
+
   @override
   _EstimateRequestFinalStepState createState() => _EstimateRequestFinalStepState();
 }
@@ -22,6 +53,25 @@ class _EstimateRequestFinalStepState extends State<EstimateRequestFinalStep> wit
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _logInputs() {
+    print('🔵 박스 사이즈');
+    print('  - 가로 (장): ${widget.length}');
+    print('  - 세로 (폭): ${widget.width}');
+    print('  - 높이 (고): ${widget.height}');
+    print('🔵 날짜 및 수량');
+    print('  - ${widget.year}년 ${widget.month}월 ${widget.day}일');
+    // print('  - 월: ${widget.month}');
+    // print('  - 일: ${widget.day}');
+    print('  - 총 수량: ${widget.quantity}');
+    print('🔵 배송 관련 정보');
+    print('  - 이름: ${widget.name}');
+    print('  - 배송지명: ${widget.location}');
+    print('  - 연락받을 번호: ${widget.phone}');
+    print('  - 우편번호: ${widget.postalCode}');
+    print('  - 주소: ${widget.address}');
+    print('  - 상세주소: ${widget.detailedAddress}');
   }
 
   @override
@@ -98,16 +148,16 @@ class _EstimateRequestFinalStepState extends State<EstimateRequestFinalStep> wit
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Row(
-                mainAxisSize: MainAxisSize.min, // 텍스트 길이에 맞춰 가로 크기 조정
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Checkbox(
                     value: true,
                     onChanged: (bool? value) {},
                   ),
-                  SizedBox(width: 8), // 텍스트와 체크박스 사이의 간격 조정
+                  SizedBox(width: 8),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0), // 텍스트 위아래 패딩 추가
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Text(
                         '업체와 전화수신 동의\n빠른 상담을 위해 업체에서 전화를 걸 수 있습니다.',
                         style: TextStyle(fontSize: 14, fontFamily: 'SCDream', color: Colors.grey),
@@ -120,6 +170,7 @@ class _EstimateRequestFinalStepState extends State<EstimateRequestFinalStep> wit
             Spacer(),
             ElevatedButton(
               onPressed: () {
+                _logInputs();
                 Navigator.popUntil(context, ModalRoute.withName('/'));
                 Navigator.pushNamed(context, '/dashboard'); // 대시보드로 이동
               },
@@ -132,36 +183,12 @@ class _EstimateRequestFinalStepState extends State<EstimateRequestFinalStep> wit
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                minimumSize: Size(double.infinity, 48), // 버튼 크기 수정
+                minimumSize: Size(double.infinity, 48),
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class StepProgressIndicator extends StatelessWidget {
-  final int currentStep;
-  final int totalSteps;
-
-  StepProgressIndicator({required this.currentStep, required this.totalSteps});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(totalSteps, (index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: Icon(
-            index < currentStep ? Icons.circle : Icons.circle_outlined,
-            color: index < currentStep ? Colors.black : Colors.grey,
-            size: 12.0,
-          ),
-        );
-      }),
     );
   }
 }
