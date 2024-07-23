@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'signup_intro.dart';
+import 'dashboard.dart'; // 대시보드 페이지 추가
 
 class Login extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
@@ -13,51 +16,46 @@ class Login extends StatelessWidget {
     print('🔵 아이디: $username, 비밀번호: $password');
 
     try {
+      final hashedPassword = sha1.convert(utf8.encode(password)).toString();
+      print('🔵 비밀번호 SHA1 해시값: $hashedPassword');
+
+      //
       final response = await http.post(
         Uri.parse('http://192.168.0.8:8095/api/login'),
+        // Uri.parse('http://192.168.35.159:8095/api/login'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
           'id': username,
-          'password': password,
+          'password': hashedPassword,
         }),
       );
 
+      print('🔵 서버 응답 코드: ${response.statusCode}');
+      print('🔵 서버 응답 본문: ${response.body}');
+
       if (response.statusCode == 200) {
-        final responseBody = response.body;
-        if (responseBody == "Login successful") {
-          // 로그인 성공
-          showDialog<void>(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('성공'),
-                content: Text('로그인 성공!'),
-                actions: [
-                  TextButton(
-                    child: Text('확인'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
+        final Map<String, dynamic> responseBody = jsonDecode(response.body);
+        print('🔵 서버 응답 메시지: ${responseBody['message']}');
+        if (responseBody['message'] == "Login successful") {
+          final String userType = responseBody['userType'];
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Dashboard(userType: userType)),
           );
-          print('🟢 Login successful');
+          print('🟢 로그인 성공');
         } else {
-          // 로그인 실패
-          print('🔴 Login failed');
+          print('🔴 로그인 실패');
           showDialog<void>(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('실패'),
-                content: Text('로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다.'),
+                title: Text('실패', style: TextStyle(fontFamily: 'SCDream')),
+                content: Text('로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다.', style: TextStyle(fontFamily: 'SCDream')),
                 actions: [
                   TextButton(
-                    child: Text('확인'),
+                    child: Text('확인', style: TextStyle(fontFamily: 'SCDream')),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
@@ -68,17 +66,17 @@ class Login extends StatelessWidget {
           );
         }
       } else {
-        // 서버 오류
-        print('🔴 Server error');
+        final Map<String, dynamic> responseBody = jsonDecode(response.body);
+        print('🔴 서버 오류: ${responseBody['message']}');
         showDialog<void>(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('오류'),
-              content: Text('서버 오류가 발생했습니다.'),
+              title: Text('오류', style: TextStyle(fontFamily: 'SCDream')),
+              content: Text('서버 오류가 발생했습니다. 메시지: ${responseBody['message']}', style: TextStyle(fontFamily: 'SCDream')),
               actions: [
                 TextButton(
-                  child: Text('확인'),
+                  child: Text('확인', style: TextStyle(fontFamily: 'SCDream')),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -89,17 +87,16 @@ class Login extends StatelessWidget {
         );
       }
     } catch (e) {
-      // 네트워크 오류
-      print('🔴 Network error: $e');
+      print('🔴 네트워크 오류: $e');
       showDialog<void>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('오류'),
-            content: Text('네트워크 오류가 발생했습니다.'),
+            title: Text('오류', style: TextStyle(fontFamily: 'SCDream')),
+            content: Text('네트워크 오류가 발생했습니다. 다시 시도해 주세요.', style: TextStyle(fontFamily: 'SCDream')),
             actions: [
               TextButton(
-                child: Text('확인'),
+                child: Text('확인', style: TextStyle(fontFamily: 'SCDream')),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -114,8 +111,9 @@ class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('로그인', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text('로그인', style: TextStyle(fontFamily: 'SCDream')),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -132,6 +130,7 @@ class Login extends StatelessWidget {
               controller: _usernameController,
               decoration: InputDecoration(
                 labelText: '아이디 입력',
+                labelStyle: TextStyle(fontFamily: 'SCDream'),
               ),
             ),
             SizedBox(height: 16.0),
@@ -139,6 +138,7 @@ class Login extends StatelessWidget {
               controller: _passwordController,
               decoration: InputDecoration(
                 labelText: '비밀번호 입력',
+                labelStyle: TextStyle(fontFamily: 'SCDream'),
               ),
               obscureText: true,
             ),
@@ -149,7 +149,7 @@ class Login extends StatelessWidget {
               },
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 12.0),
-                child: Text('로그인', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('로그인', style: TextStyle(fontFamily: 'SCDream')),
               ),
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -165,14 +165,14 @@ class Login extends StatelessWidget {
                   onPressed: () {
                     // 아이디 찾기 눌렀을 때 동작
                   },
-                  child: Text('아이디찾기'),
+                  child: Text('아이디찾기', style: TextStyle(fontFamily: 'SCDream')),
                 ),
                 Text('   |   '),
                 TextButton(
                   onPressed: () {
                     // 비밀번호 찾기 눌렀을 때 동작
                   },
-                  child: Text('비밀번호찾기'),
+                  child: Text('비밀번호찾기', style: TextStyle(fontFamily: 'SCDream')),
                 ),
               ],
             ),
@@ -180,10 +180,14 @@ class Login extends StatelessWidget {
             OutlinedButton(
               onPressed: () {
                 // 회원 가입 로직
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignupIntro()),
+                );
               },
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 12.0),
-                child: Text('회원 가입하기', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('회원 가입하기', style: TextStyle(fontFamily: 'SCDream')),
               ),
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(

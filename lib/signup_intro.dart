@@ -31,7 +31,7 @@ class _SignupIntroState extends State<SignupIntro> {
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => Dashboard()),
+                MaterialPageRoute(builder: (context) => Dashboard(userType: 'guest')),
               );
             },
           ),

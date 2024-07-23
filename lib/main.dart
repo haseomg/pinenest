@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
+import 'signup_intro.dart';
+import 'dashboard.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: '로그인',
       theme: ThemeData(
         primarySwatch: Colors.grey,
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           color: Colors.white,
           iconTheme: IconThemeData(color: Colors.black),
           titleTextStyle: TextStyle(
@@ -25,7 +27,7 @@ class MyApp extends StatelessWidget {
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             foregroundColor: Colors.black, // 버튼 텍스트 색상
-            textStyle: TextStyle(
+            textStyle: const TextStyle(
               fontSize: 16,
             ),
           ),
@@ -34,23 +36,23 @@ class MyApp extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.black, // 버튼 배경 색상
             foregroundColor: Colors.white, // 버튼 텍스트 색상
-            textStyle: TextStyle(
+            textStyle: const TextStyle(
               fontSize: 18,
             ),
-            padding: EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.black, // 버튼 텍스트 색상
-            side: BorderSide(color: Colors.black),
-            textStyle: TextStyle(
+            side: const BorderSide(color: Colors.black),
+            textStyle: const TextStyle(
               fontSize: 18,
             ),
-            padding: EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
           ),
         ),
-        inputDecorationTheme: InputDecorationTheme(
+        inputDecorationTheme: const InputDecorationTheme(
           labelStyle: TextStyle(
             color: Colors.grey,
             fontSize: 16,
@@ -63,7 +65,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: Login(),
+      home: Login(), // 초기 화면을 로그인 화면으로 설정
     );
   }
 }
