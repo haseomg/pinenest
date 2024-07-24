@@ -12,10 +12,27 @@ class _EstimateRequestBoxSizeState extends State<EstimateRequestBoxSize> {
   final TextEditingController _widthController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
 
+  // 기본값 설정
+  final String defaultLength = "100"; // 100mm
+  final String defaultWidth = "100"; // 100mm
+  final String defaultHeight = "55"; // 55mm
+
+  String getLength() {
+    return _lengthController.text.isEmpty ? defaultLength : _lengthController.text;
+  }
+
+  String getWidth() {
+    return _widthController.text.isEmpty ? defaultWidth : _widthController.text;
+  }
+
+  String getHeight() {
+    return _heightController.text.isEmpty ? defaultHeight : _heightController.text;
+  }
+
   void _nextStep(BuildContext context) {
-    final length = _lengthController.text;
-    final width = _widthController.text;
-    final height = _heightController.text;
+    final length = getLength();
+    final width = getWidth();
+    final height = getHeight();
 
     print('📦 Box Size - Length: $length, Width: $width, Height: $height');
 

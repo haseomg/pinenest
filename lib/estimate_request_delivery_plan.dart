@@ -35,13 +35,55 @@ class _EstimateRequestDeliveryPlanState extends State<EstimateRequestDeliveryPla
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _detailedAddressController = TextEditingController();
 
+  // 기본값 설정
+  final String defaultName = "고객";
+  final String defaultLocation = "배송지";
+  final String defaultPhone1 = "010";
+  final String defaultPhone2 = "1234";
+  final String defaultPhone3 = "5678";
+  final String defaultPostalCode = "00000";
+  final String defaultAddress = "주소를 입력해 주세요";
+  final String defaultDetailedAddress = "상세주소를 입력해 주세요";
+
+  String getName() {
+    return _nameController.text.isEmpty ? defaultName : _nameController.text;
+  }
+
+  String getLocation() {
+    return _locationController.text.isEmpty ? defaultLocation : _locationController.text;
+  }
+
+  String getPhonePart1() {
+    return _phoneController1.text.isEmpty ? defaultPhone1 : _phoneController1.text;
+  }
+
+  String getPhonePart2() {
+    return _phoneController2.text.isEmpty ? defaultPhone2 : _phoneController2.text;
+  }
+
+  String getPhonePart3() {
+    return _phoneController3.text.isEmpty ? defaultPhone3 : _phoneController3.text;
+  }
+
+  String getPostalCode() {
+    return _postalCodeController.text.isEmpty ? defaultPostalCode : _postalCodeController.text;
+  }
+
+  String getAddress() {
+    return _addressController.text.isEmpty ? defaultAddress : _addressController.text;
+  }
+
+  String getDetailedAddress() {
+    return _detailedAddressController.text.isEmpty ? defaultDetailedAddress : _detailedAddressController.text;
+  }
+
   void _nextStep(BuildContext context) {
-    final name = _nameController.text;
-    final location = _locationController.text;
-    final phone = '${_phoneController1.text}-${_phoneController2.text}-${_phoneController3.text}';
-    final postalCode = _postalCodeController.text;
-    final address = _addressController.text;
-    final detailedAddress = _detailedAddressController.text;
+    final name = getName();
+    final location = getLocation();
+    final phone = '${getPhonePart1()}-${getPhonePart2()}-${getPhonePart3()}';
+    final postalCode = getPostalCode();
+    final address = getAddress();
+    final detailedAddress = getDetailedAddress();
 
     print('📦 Box Size - Length: ${widget.length}, Width: ${widget.width}, Height: ${widget.height}');
     print('📆 Request Date: ${widget.year}-${widget.month}-${widget.day}, 🔢 Quantity: ${widget.quantity}');
