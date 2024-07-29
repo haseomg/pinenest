@@ -27,6 +27,7 @@ class CompletedHistory extends StatelessWidget {
           },
         ),
       ),
+
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         items: const <BottomNavigationBarItem>[
@@ -49,6 +50,14 @@ class CompletedHistory extends StatelessWidget {
         ],
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
+        currentIndex: 2, // 완료 내역 페이지에서 견적 메뉴 활성화
+        onTap: (index) {
+          // 바텀 네비게이션 바 아이템 클릭 시 동작
+          if (index != 2) {
+            Navigator.popUntil(context, ModalRoute.withName('/'));
+            Navigator.pushNamed(context, '/dashboard');
+          }
+        },
       ),
     );
   }

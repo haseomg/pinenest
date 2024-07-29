@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'signup_intro.dart';
-import 'dashboard.dart'; // 대시보드 페이지 추가
+import 'dashboard.dart';
 
 class Login extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
@@ -40,21 +40,49 @@ class Login extends StatelessWidget {
         if (responseBody['message'] == "Login successful") {
           final String userType = responseBody['userType'];
           final String token = responseBody['token'];
-          // FIXME - username decoding
           final String username = responseBody['username'];
+          final String userId = responseBody['userId'];
 
-          // JWT 토큰과 사용자 이름을 로컬 스토리지에 저장
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', token);
-          await prefs.setString('userType', userType);
-          await prefs.setString('username', username);
+          // JWT 토큰과 사용자 정보를 로컬 스토리지에 저장
 
-          print('🟢 로그인 성공 - 유저 타입: $userType, 토큰: $token, 사용자 이름: $username');
+          if (userType == 'boxman_user') {
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => Dashboard(userType: userType, username: username)),
-          );
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setString('token', token);
+            await prefs.setString('userType', userType);
+            await prefs.setString('username', username);
+            await prefs.setString('userId', userId); // userId 저장
+
+            print('🟢 로그인 성공 - 유저 타입: $userType, 토큰: $token, 사용자 이름: $username');
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Dashboard(userType: userType, username: username)),
+            );
+
+          } else {
+            print('🔴 로그인 실패 - 유저 타입: $userType, 토큰: $token, 사용자 이름: $username');
+            showDialog<void>(
+              context: context,
+
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('로그인 실패', style: TextStyle(fontFamily: 'SCDream')),
+                  content: Text('아이디 또는 비밀번호가 일치하지 않습니다.', style: TextStyle(fontFamily: 'SCDream')),
+                  actions: [
+                    TextButton(
+                      child: Text('확인', style: TextStyle(fontFamily: 'SCDream')),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+
+
         } else {
           print('🔴 로그인 실패');
           showDialog<void>(
@@ -83,7 +111,6 @@ class Login extends StatelessWidget {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('오류', style: TextStyle(fontFamily: 'SCDream')),
-              // content: Text('서버 오류가 발생했습니다. 메시지: ${responseBody['message']}', style: TextStyle(fontFamily: 'SCDream')),
               content: Text('아이디와 비밀번호를 확인해 주세요.', style: TextStyle(fontFamily: 'SCDream')),
               actions: [
                 TextButton(

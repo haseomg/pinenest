@@ -2,13 +2,25 @@ import 'package:flutter/material.dart';
 import 'login.dart';
 import 'signup_intro.dart';
 import 'dashboard.dart';
+import 'estimate_request_final_step.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
+  String? userType = prefs.getString('userType') ?? 'default';
+  String? username = prefs.getString('username') ?? 'default';
+
+  runApp(MyApp(token: token, userType: userType, username: username));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final String? token;
+  final String? userType;
+  final String? username;
+
+  const MyApp({Key? key, this.token, this.userType, this.username}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +38,7 @@ class MyApp extends StatelessWidget {
         ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-            foregroundColor: Colors.black, // 버튼 텍스트 색상
+            foregroundColor: Colors.black,
             textStyle: const TextStyle(
               fontSize: 16,
             ),
@@ -34,8 +46,8 @@ class MyApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black, // 버튼 배경 색상
-            foregroundColor: Colors.white, // 버튼 텍스트 색상
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
             textStyle: const TextStyle(
               fontSize: 18,
             ),
@@ -44,7 +56,7 @@ class MyApp extends StatelessWidget {
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.black, // 버튼 텍스트 색상
+            foregroundColor: Colors.black,
             side: const BorderSide(color: Colors.black),
             textStyle: const TextStyle(
               fontSize: 18,
@@ -65,7 +77,12 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: Login(), // 초기 화면을 로그인 화면으로 설정
+      home: token == null || userType == 'default' || username == 'default'
+          ? Login()
+          : Dashboard(userType: userType!, username: username!),
+      routes: {
+        '/dashboard': (context) => Dashboard(userType: 'default', username: 'default'),
+      },
     );
   }
 }

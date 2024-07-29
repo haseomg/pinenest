@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'step_progress_indicator.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dashboard.dart';
 
 class EstimateRequestFinalStep extends StatefulWidget {
   final String length;
@@ -55,6 +59,63 @@ class _EstimateRequestFinalStepState extends State<EstimateRequestFinalStep> wit
     super.dispose();
   }
 
+  Future<void> _sendRequest() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('userId');
+    print('🔵 Sending request with userId: $userId');
+
+    final url = Uri.parse('http://192.168.0.8:8095/api/estimate-requests');
+
+    final requestData = jsonEncode(<String, dynamic>{
+      'userId': userId,
+      'boxLength': widget.length.isNotEmpty ? widget.length : 'defaultLength',
+      'boxWidth': widget.width.isNotEmpty ? widget.width : 'defaultWidth',
+      'boxHeight': widget.height.isNotEmpty ? widget.height : 'defaultHeight',
+      'quantity': widget.quantity.isNotEmpty ? widget.quantity : 'defaultQuantity',
+      'year': widget.year.isNotEmpty ? widget.year : 'defaultYear',
+      'month': widget.month.isNotEmpty ? widget.month : 'defaultMonth',
+      'day': widget.day.isNotEmpty ? widget.day : 'defaultDay',
+      'receiverName': widget.name.isNotEmpty ? widget.name : 'defaultName',
+      'location': widget.location.isNotEmpty ? widget.location : 'defaultLocation',
+      'phone': widget.phone.isNotEmpty ? widget.phone : 'defaultPhone',
+      'postalCode': widget.postalCode.isNotEmpty ? widget.postalCode : 'defaultPostalCode',
+      'address': widget.address.isNotEmpty ? widget.address : 'defaultAddress',
+      'detailedAddress': widget.detailedAddress.isNotEmpty ? widget.detailedAddress : 'defaultDetailedAddress',
+    });
+
+    print('🔵 Request Data: $requestData');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: requestData,
+      );
+
+      print('🔵 Response Status Code: ${response.statusCode}');
+      print('🔵 Response Body: ${response.body}');
+
+      if (response.statusCode == 201) {
+        print('🔵 요청 성공');
+        print('응답 바디: ${response.body}');
+      } else {
+        print('🔴 요청 실패');
+        print('응답 상태 코드: ${response.statusCode}');
+        print('응답 바디: ${response.body}');
+      }
+    } catch (e) {
+      print('🔴 요청 중 오류 발생: $e');
+      if (e is http.ClientException) {
+        print('🔴 ClientException: ${e.message}');
+        print('🔴 URI: ${url}');
+      } else {
+        print('🔴 기타 오류: ${e.toString()}');
+      }
+    }
+  }
+
   void _logInputs() {
     print('🔵 박스 사이즈');
     print('  - 가로 (장): ${widget.length}');
@@ -62,8 +123,6 @@ class _EstimateRequestFinalStepState extends State<EstimateRequestFinalStep> wit
     print('  - 높이 (고): ${widget.height}');
     print('🔵 날짜 및 수량');
     print('  - ${widget.year}년 ${widget.month}월 ${widget.day}일');
-    // print('  - 월: ${widget.month}');
-    // print('  - 일: ${widget.day}');
     print('  - 총 수량: ${widget.quantity}');
     print('🔵 배송 관련 정보');
     print('  - 이름: ${widget.name}');
@@ -171,8 +230,12 @@ class _EstimateRequestFinalStepState extends State<EstimateRequestFinalStep> wit
             ElevatedButton(
               onPressed: () {
                 _logInputs();
-                Navigator.popUntil(context, ModalRoute.withName('/'));
-                Navigator.pushNamed(context, '/dashboard'); // 대시보드로 이동
+                _sendRequest(); // 서버로 요청 보내기
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => Dashboard(userType: 'userType', username: 'username')),
+                      (route) => false,
+                );
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
